@@ -1,0 +1,228 @@
+/* page.css — homepage only */
+
+/* --- Hero ---------------------------------------------------------------
+   The thesis: a hard horizon between sky and turf. Nothing about this edge
+   is soft, because the edge is what the business sells. */
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 94svh;
+}
+
+.hero__sky {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  padding-block: var(--s-10) var(--s-7);
+}
+
+.hero__inner {
+  width: 100%;
+}
+
+.hero__eyebrow {
+  display: block;
+  margin-bottom: var(--s-4);
+}
+
+.hero__title {
+  font-size: var(--fs-hero);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-hero);
+  text-transform: uppercase;
+  margin-bottom: var(--s-5);
+  color: var(--c-turf);
+}
+
+.hero__line {
+  display: block;
+}
+
+.hero__line--accent {
+  color: var(--c-cut);
+}
+
+.hero__lede {
+  max-width: 44ch;
+  color: var(--c-ink-mid);
+  font-size: var(--fs-body-lg);
+  margin-bottom: var(--s-6);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
+/* Load sequence: elements travel straight up at an even rate. */
+.hero__eyebrow,
+.hero__title,
+.hero__lede,
+.hero__actions {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--t-slow) var(--e-out),
+    transform var(--t-slow) var(--e-out);
+}
+
+.hero__eyebrow { transition-delay: 60ms; }
+.hero__title   { transition-delay: 140ms; }
+.hero__lede    { transition-delay: 260ms; }
+.hero__actions { transition-delay: 360ms; }
+
+.hero--in .hero__eyebrow,
+.hero--in .hero__title,
+.hero--in .hero__lede,
+.hero--in .hero__actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* The ground: a band of turf with mower stripes, cut off hard at the top. */
+.hero__ground {
+  position: relative;
+  height: clamp(120px, 22vh, 220px);
+  background: var(--c-turf);
+  border-top: 4px solid var(--c-cut);
+  overflow: hidden;
+}
+
+.hero__stripes {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--c-cut) 14%, transparent) 0 60px,
+    transparent 60px 120px
+  );
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.6s var(--e-linear) 520ms;
+}
+
+.hero--in .hero__stripes {
+  transform: scaleX(1);
+}
+
+/* --- Services ------------------------------------------------------------ */
+
+.services {
+  padding-block: var(--s-8);
+}
+
+.services__head {
+  margin-bottom: var(--s-4);
+}
+
+.services__title {
+  font-size: var(--fs-h2);
+  margin-top: var(--s-2);
+  text-transform: uppercase;
+  color: var(--c-turf);
+}
+
+.services__rule {
+  margin-bottom: var(--s-6);
+}
+
+.services__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0;
+  list-style: none;
+  border-top: 1px solid var(--c-sand-line);
+  border-left: 1px solid var(--c-sand-line);
+}
+
+.services__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  padding: var(--s-5);
+  border-right: 1px solid var(--c-sand-line);
+  border-bottom: 1px solid var(--c-sand-line);
+  transition: background var(--t-fast) var(--e-out);
+}
+
+.services__item:hover {
+  background: var(--c-sand);
+}
+
+.services__name {
+  font-family: var(--f-display);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-tight);
+  color: var(--c-turf);
+}
+
+.services__detail {
+  font-size: var(--fs-small);
+  color: var(--c-ink-mid);
+}
+
+/* --- Recent jobs --------------------------------------------------------- */
+
+.recent {
+  padding-block: var(--s-7) var(--s-6);
+}
+
+.recent__head {
+  margin-bottom: var(--s-4);
+}
+
+.recent__title {
+  font-size: var(--fs-h2);
+  margin-top: var(--s-2);
+  text-transform: uppercase;
+  color: var(--c-turf);
+}
+
+.recent__rule {
+  margin-bottom: var(--s-5);
+}
+
+/* --- Highlight cards ----------------------------------------------------- */
+
+.highlights {
+  padding-block: var(--s-7);
+}
+
+.highlights__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
+  gap: var(--s-4);
+}
+
+/* --- Closing ------------------------------------------------------------- */
+
+.closing {
+  margin-top: var(--s-8);
+  background: var(--c-turf);
+  color: var(--c-on-turf);
+}
+
+.closing__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-5);
+  padding-block: var(--s-8);
+}
+
+.closing__title {
+  font-size: var(--fs-h2);
+  text-transform: uppercase;
+  margin-bottom: var(--s-3);
+}
+
+.closing__text {
+  max-width: 46ch;
+  color: var(--c-sand);
+}

@@ -1,0 +1,235 @@
+/* page.css — quote / contact page only */
+
+.quote__head {
+  padding-block: calc(var(--s-10) + var(--s-2)) var(--s-6);
+}
+
+.quote__title {
+  font-size: var(--fs-h1);
+  margin-top: var(--s-2);
+  text-transform: uppercase;
+  color: var(--c-turf);
+}
+
+.quote__lede {
+  max-width: 52ch;
+  margin-top: var(--s-3);
+  color: var(--c-ink-mid);
+  font-size: var(--fs-body-lg);
+}
+
+.quote__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(270px, 0.8fr);
+  gap: var(--s-8);
+  padding-block: var(--s-7) var(--s-8);
+  align-items: start;
+}
+
+/* --- Form ---------------------------------------------------------------- */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-5);
+  border: 2px solid var(--c-sand-line);
+}
+
+.fieldset__legend {
+  padding-inline: var(--s-3);
+  margin-left: calc(var(--s-3) * -1);
+  font-family: var(--f-display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-turf);
+}
+
+.form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+}
+
+.form__banner {
+  padding: var(--s-4);
+  border-left: 4px solid;
+  font-size: var(--fs-small);
+}
+
+.form__banner--ok {
+  border-color: var(--c-success);
+  background: color-mix(in srgb, var(--c-success) 12%, transparent);
+  color: var(--c-success);
+}
+
+.form__banner--bad {
+  border-color: var(--c-error);
+  background: color-mix(in srgb, var(--c-error) 10%, transparent);
+  color: var(--c-error);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.field__label {
+  font-family: var(--f-display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-ink-mid);
+}
+
+.field__input {
+  width: 100%;
+  padding: var(--s-3) var(--s-4);
+  background: var(--c-sand-pale);
+  border: 2px solid var(--c-sand-line);
+  border-radius: 0;
+  color: var(--c-ink);
+  font-size: var(--fs-body);
+  transition:
+    border-color var(--t-fast) var(--e-out),
+    background var(--t-fast) var(--e-out);
+}
+
+.field__input:hover {
+  border-color: var(--c-ink-faint);
+}
+
+.field__input:focus {
+  outline: none;
+  border-color: var(--c-turf);
+  background: var(--c-white);
+}
+
+.field__input--area {
+  resize: vertical;
+  min-height: 9rem;
+  font-family: var(--f-body);
+  line-height: var(--lh-body);
+}
+
+.field__input--bad {
+  border-color: var(--c-error);
+}
+
+.field__error {
+  color: var(--c-error);
+  font-size: var(--fs-small);
+}
+
+/* Honeypot stays in the DOM but out of sight and out of the tab order. */
+.form__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form__submit {
+  align-self: flex-start;
+}
+
+/* --- Aside --------------------------------------------------------------- */
+
+.aside {
+  position: sticky;
+  top: var(--s-9);
+  padding: var(--s-5);
+  background: var(--c-sand);
+  border: 2px solid var(--c-turf);
+}
+
+.aside__title {
+  font-size: var(--fs-h3);
+  text-transform: uppercase;
+  color: var(--c-turf);
+  margin-bottom: var(--s-5);
+}
+
+.aside__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  list-style: none;
+}
+
+/* These are a real sequence, so the ordinal labels carry information. */
+.aside__step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  padding-left: var(--s-4);
+  border-left: 3px solid var(--c-cut);
+  color: var(--c-ink-mid);
+  font-size: var(--fs-small);
+}
+
+.aside__step-label {
+  font-family: var(--f-display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-turf);
+}
+
+.aside__urgent {
+  margin-top: var(--s-6);
+  padding-top: var(--s-5);
+  border-top: 2px solid var(--c-sand-line);
+}
+
+.aside__urgent-label {
+  display: block;
+  font-family: var(--f-display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-ink-faint);
+}
+
+.aside__phone {
+  display: inline-block;
+  margin-top: var(--s-2);
+  font-family: var(--f-display);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--c-turf);
+  border-bottom: 2px solid var(--c-cut);
+}
+
+.aside__hours {
+  margin-top: var(--s-2);
+  font-size: var(--fs-small);
+  color: var(--c-ink-mid);
+}
+
+@media (max-width: 900px) {
+  .quote__body {
+    grid-template-columns: 1fr;
+  }
+
+  .aside {
+    position: static;
+  }
+
+  .form__row {
+    grid-template-columns: 1fr;
+  }
+}

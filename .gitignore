@@ -1,0 +1,24 @@
+# Java
+target/
+*.class
+*.jar
+
+# Node
+node_modules/
+.svelte-kit/
+build/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Local images (uploaded content, not source)
+local-images/*
+!local-images/.gitkeep
+
+# Editors and OS
+.idea/
+.vscode/
+*.iml
+.DS_Store

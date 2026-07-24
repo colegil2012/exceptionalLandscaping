@@ -1,0 +1,189 @@
+/* SiteNav.css — fixed header on the sand ground */
+
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: var(--z-nav);
+  border-bottom: 2px solid transparent;
+  transition:
+    background var(--t-med) var(--e-out),
+    border-color var(--t-med) var(--e-out);
+}
+
+.nav--scrolled {
+  background: color-mix(in srgb, var(--c-sand-pale) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom-color: var(--c-turf);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-5);
+  padding-block: var(--s-4);
+}
+
+.nav__mark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.nav__mark-name {
+  font-family: var(--f-display);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  letter-spacing: var(--ls-tight);
+  text-transform: uppercase;
+  color: var(--c-turf);
+}
+
+.nav__mark-role {
+  font-family: var(--f-display);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-ink-faint);
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+}
+
+.nav__link {
+  position: relative;
+  font-family: var(--f-display);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-ink-mid);
+  padding-block: var(--s-1);
+  transition: color var(--t-fast) var(--e-out);
+}
+
+.nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: var(--c-cut);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--t-med) var(--e-out);
+}
+
+.nav__link:hover,
+.nav__link--current {
+  color: var(--c-turf);
+}
+
+.nav__link:hover::after,
+.nav__link--current::after {
+  transform: scaleX(1);
+}
+
+/* The quote link is the primary action, so it reads as a button. */
+.nav__link--cta {
+  padding: var(--s-2) var(--s-4);
+  background: var(--c-turf);
+  color: var(--c-on-turf);
+  transition:
+    background var(--t-fast) var(--e-out),
+    color var(--t-fast) var(--e-out);
+}
+
+.nav__link--cta::after {
+  display: none;
+}
+
+.nav__link--cta:hover,
+.nav__link--cta.nav__link--current {
+  background: var(--c-cut);
+  color: var(--c-turf-deep);
+}
+
+/* --- Mobile ------------------------------------------------------------- */
+
+.nav__toggle {
+  display: none;
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border: 2px solid var(--c-turf);
+  background: transparent;
+  cursor: pointer;
+}
+
+.nav__bar,
+.nav__bar::before,
+.nav__bar::after {
+  position: absolute;
+  left: 50%;
+  width: 20px;
+  height: 2px;
+  background: var(--c-turf);
+  transform: translateX(-50%);
+  transition: transform var(--t-fast) var(--e-out), opacity var(--t-fast) var(--e-out);
+}
+
+.nav__bar {
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.nav__bar::before,
+.nav__bar::after {
+  content: '';
+  left: 0;
+  transform: none;
+}
+
+.nav__bar::before { top: -6px; }
+.nav__bar::after  { top: 6px; }
+
+.nav__bar--x { background: transparent; }
+.nav__bar--x::before { transform: translateY(6px) rotate(45deg); }
+.nav__bar--x::after  { transform: translateY(-6px) rotate(-45deg); }
+
+@media (max-width: 760px) {
+  .nav__toggle {
+    display: block;
+  }
+
+  .nav__links {
+    position: absolute;
+    inset: 100% 0 auto 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--c-sand);
+    border-bottom: 2px solid var(--c-turf);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--t-med) var(--e-out);
+  }
+
+  .nav__links--open {
+    max-height: 70vh;
+  }
+
+  .nav__link {
+    padding: var(--s-4) var(--gutter);
+    border-top: 1px solid var(--c-sand-line);
+  }
+
+  .nav__link::after {
+    display: none;
+  }
+
+  .nav__link--cta {
+    text-align: center;
+  }
+}

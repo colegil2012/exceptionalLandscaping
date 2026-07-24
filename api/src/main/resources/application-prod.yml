@@ -1,0 +1,14 @@
+spring:
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
+
+app:
+  cors:
+    allowed-origins: ${CORS_ORIGINS}
+  mail:
+    enabled: true
+
+logging:
+  level:
+    com.studio.api: INFO

@@ -1,0 +1,160 @@
+/* page.css — about page only */
+
+.about__head {
+  padding-block: calc(var(--s-10) + var(--s-2)) var(--s-6);
+}
+
+.about__title {
+  font-size: var(--fs-h1);
+  margin-top: var(--s-2);
+  text-transform: uppercase;
+  color: var(--c-turf);
+}
+
+/* Facts band: a strip of turf carrying the hard numbers. */
+.about__facts-band {
+  background: var(--c-turf);
+  color: var(--c-on-turf);
+  border-block: 4px solid var(--c-cut);
+}
+
+.about__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--s-5);
+  padding-block: var(--s-6);
+}
+
+.about__fact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.about__fact-label {
+  font-family: var(--f-display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-cut);
+}
+
+.about__fact-value {
+  font-family: var(--f-display);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+}
+
+.about__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(240px, 0.7fr);
+  gap: var(--s-8);
+  padding-block: var(--s-8);
+  align-items: start;
+}
+
+.about__prose {
+  max-width: var(--w-text);
+}
+
+.about__prose p {
+  margin-bottom: var(--s-5);
+  color: var(--c-ink-mid);
+}
+
+.about__lede {
+  font-size: var(--fs-body-lg);
+  color: var(--c-ink) !important;
+}
+
+.about__rule {
+  margin-block: var(--s-6);
+}
+
+.about__h2 {
+  font-size: var(--fs-h3);
+  margin-bottom: var(--s-4);
+  text-transform: uppercase;
+  color: var(--c-turf);
+}
+
+.about__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-top: var(--s-7);
+}
+
+/* --- Aside --------------------------------------------------------------- */
+
+.about__aside {
+  position: sticky;
+  top: var(--s-9);
+}
+
+.about__photo {
+  aspect-ratio: 4 / 3;
+  border: 2px solid var(--c-turf);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--c-sand) 0 18px,
+      var(--c-sand-line) 18px 36px
+    );
+}
+
+.about__caption {
+  margin-top: var(--s-2);
+  font-family: var(--f-display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-ink-faint);
+}
+
+.about__contact {
+  margin-top: var(--s-6);
+  padding: var(--s-5);
+  background: var(--c-sand);
+  border: 2px solid var(--c-turf);
+}
+
+.about__contact-label {
+  display: block;
+  font-family: var(--f-display);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-ink-faint);
+}
+
+.about__phone {
+  display: inline-block;
+  margin-top: var(--s-2);
+  font-family: var(--f-display);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--c-turf);
+  border-bottom: 2px solid var(--c-cut);
+}
+
+.about__hours {
+  margin-top: var(--s-2);
+  font-size: var(--fs-small);
+  color: var(--c-ink-mid);
+}
+
+@media (max-width: 900px) {
+  .about__body {
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+  }
+
+  .about__aside {
+    position: static;
+    max-width: 360px;
+  }
+}

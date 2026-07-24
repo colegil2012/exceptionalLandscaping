@@ -1,0 +1,233 @@
+# =============================================================================
+# DigitalOcean App Platform spec — landscaping-site
+#
+# One app, two components:
+#   api  — Spring Boot container, receives /api/* and /actuator/*
+#   web  — SvelteKit (adapter-node) container, receives everything else
+#
+# Because both sit behind the same hostname, the browser only ever talks to
+# one origin. That means PUBLIC_API_BASE stays empty and CORS never engages —
+# same-origin requests don't trigger it. Only split this into two apps if you
+# need the API on its own hostname; then set PUBLIC_API_BASE and CORS_ORIGINS
+# accordingly.
+#
+# Deploy:
+#   doctl apps create --spec .do/app.yaml
+# Update:
+#   doctl apps update <APP_ID> --spec .do/app.yaml
+# =============================================================================
+
+name: landscaping-site
+region: nyc
+
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+
+services:
+  # ---------------------------------------------------------------------------
+  # Spring Boot API
+  # ---------------------------------------------------------------------------
+  - name: api
+    dockerfile_path: api/Dockerfile
+    source_dir: /
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb
+
+    github:
+      repo: YOUR_GH_USER/landscaping-site
+      branch: main
+      deploy_on_push: true
+
+    # Readiness: pulled from rotation while warming, put back when ready.
+    health_check:
+      http_path: /actuator/health/readiness
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 5
+
+    # Liveness: restarts the container if the JVM wedges. Deliberately more
+    # forgiving than readiness so a slow GC pause doesn't cause a restart loop.
+    liveness_health_check:
+      http_path: /actuator/health/liveness
+      initial_delay_seconds: 45
+      period_seconds: 15
+      timeout_seconds: 5
+      failure_threshold: 6
+
+    # Give in-flight requests time to finish before the container dies.
+    termination:
+      drain_seconds: 15
+      grace_period_seconds: 30
+
+    alerts:
+      - rule: CPU_UTILIZATION
+        operator: GREATER_THAN
+        value: 80
+        window: FIVE_MINUTES
+      - rule: MEM_UTILIZATION
+        operator: GREATER_THAN
+        value: 85
+        window: FIVE_MINUTES
+      - rule: RESTART_COUNT
+        operator: GREATER_THAN
+        value: 3
+        window: TEN_MINUTES
+
+    envs:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+        scope: RUN_TIME
+
+      # Same-origin deployment: the browser never makes a cross-origin call,
+      # so this is only a fallback. Set it to the real origin if you split
+      # the API onto its own hostname.
+      - key: CORS_ORIGINS
+        value: ${APP_URL}
+        scope: RUN_TIME
+
+      # --- Mongo -------------------------------------------------------------
+      # Managed Mongo (Atlas or DO) — set as an encrypted secret in the
+      # control panel, or via `doctl` with type SECRET.
+      - key: MONGO_URI
+        value: CHANGE_ME
+        scope: RUN_TIME
+        type: SECRET
+
+      # --- DigitalOcean Spaces ----------------------------------------------
+      - key: SPACES_ENDPOINT
+        value: https://nyc3.digitaloceanspaces.com
+        scope: RUN_TIME
+      - key: SPACES_REGION
+        value: nyc3
+        scope: RUN_TIME
+      - key: SPACES_BUCKET
+        value: CHANGE_ME
+        scope: RUN_TIME
+      - key: SPACES_CDN_BASE
+        value: CHANGE_ME
+        scope: RUN_TIME
+      - key: SPACES_KEY
+        value: CHANGE_ME
+        scope: RUN_TIME
+        type: SECRET
+      - key: SPACES_SECRET
+        value: CHANGE_ME
+        scope: RUN_TIME
+        type: SECRET
+
+      # --- Mail --------------------------------------------------------------
+      - key: MAIL_ENABLED
+        value: "true"
+        scope: RUN_TIME
+      - key: MAIL_HOST
+        value: CHANGE_ME
+        scope: RUN_TIME
+      - key: MAIL_PORT
+        value: "587"
+        scope: RUN_TIME
+      - key: MAIL_NOTIFY_TO
+        value: CHANGE_ME
+        scope: RUN_TIME
+      - key: MAIL_NOTIFY_FROM
+        value: CHANGE_ME
+        scope: RUN_TIME
+      - key: MAIL_USERNAME
+        value: CHANGE_ME
+        scope: RUN_TIME
+        type: SECRET
+      - key: MAIL_PASSWORD
+        value: CHANGE_ME
+        scope: RUN_TIME
+        type: SECRET
+
+  # ---------------------------------------------------------------------------
+  # SvelteKit frontend
+  # ---------------------------------------------------------------------------
+  - name: web
+    dockerfile_path: web/Dockerfile
+    source_dir: /
+    http_port: 3000
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-0.5gb
+
+    github:
+      repo: YOUR_GH_USER/landscaping-site
+      branch: main
+      deploy_on_push: true
+
+    health_check:
+      http_path: /
+      initial_delay_seconds: 10
+      period_seconds: 10
+      timeout_seconds: 5
+      failure_threshold: 5
+
+    termination:
+      drain_seconds: 10
+      grace_period_seconds: 20
+
+    alerts:
+      - rule: CPU_UTILIZATION
+        operator: GREATER_THAN
+        value: 80
+        window: FIVE_MINUTES
+      - rule: RESTART_COUNT
+        operator: GREATER_THAN
+        value: 3
+        window: TEN_MINUTES
+
+    envs:
+      # Empty on purpose: api and web share a hostname, so relative /api
+      # requests resolve correctly and no CORS preflight ever fires.
+      - key: PUBLIC_API_BASE
+        value: ""
+        scope: RUN_TIME
+      - key: NODE_ENV
+        value: production
+        scope: RUN_TIME
+
+# =============================================================================
+# Ingress — order matters. First match wins, so the specific /api and
+# /actuator prefixes must precede the catch-all /.
+#
+# preserve_path_prefix: true is essential. Without it App Platform strips the
+# matched prefix, so /api/gallery arrives at Spring as /gallery and 404s.
+# =============================================================================
+ingress:
+  rules:
+    - match:
+        path:
+          prefix: /api
+      component:
+        name: api
+        preserve_path_prefix: true
+
+    - match:
+        path:
+          prefix: /actuator
+      component:
+        name: api
+        preserve_path_prefix: true
+
+    - match:
+        path:
+          prefix: /
+      component:
+        name: web
+
+# =============================================================================
+# Domains — uncomment and set once DNS is ready.
+#
+# If the domain is on Cloudflare, keep the record DNS-only (grey) until the
+# certificate is issued, then switch to proxied with SSL mode Full (strict).
+# Flipping to proxied before the cert exists produces confusing 5xx errors.
+# =============================================================================
+# domains:
+#   - domain: ridgelinelandscape.com
+#     type: PRIMARY
+#   - domain: www.ridgelinelandscape.com
+#     type: ALIAS

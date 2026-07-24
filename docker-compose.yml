@@ -1,0 +1,79 @@
+# =============================================================================
+# docker-compose — local development for landscaping-site
+#
+# Brings up Mongo, the API, and the web frontend together. This mirrors the
+# production container setup closely enough to catch Dockerfile problems
+# before they reach App Platform, while still using the `local` Spring
+# profile so images come from ./local-images instead of Spaces.
+#
+#   docker compose up --build
+#   → web  http://localhost:3000
+#   → api  http://localhost:8080/actuator/health
+#
+# For frontend work, prefer `npm run dev` in ./web against a composed API —
+# the Vite dev server has hot reload, this does not.
+# =============================================================================
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: landscaping-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      # Gate the API on Mongo actually answering, not just the port opening.
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: landscaping-api
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      # `mongo` is the compose service name, resolved on the shared network.
+      MONGO_URI: mongodb://mongo:27017/landscaping
+      CORS_ORIGINS: http://localhost:3000
+      LOCAL_IMAGE_ROOT: /app/local-images
+      LOCAL_IMAGE_PREFIX: /images
+      MAIL_ENABLED: "false"
+    volumes:
+      # Bind-mounted so images dropped on the host appear immediately in the
+      # container without a rebuild.
+      - ./local-images:/app/local-images
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    container_name: landscaping-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOST: 0.0.0.0
+      # Browser-facing, so it must be an address the *browser* can reach —
+      # `http://api:8080` only resolves inside the compose network, not from
+      # your laptop. Leaving it empty would make the browser request
+      # localhost:3000/api, which the Node server does not proxy.
+      PUBLIC_API_BASE: http://localhost:8080
+
+volumes:
+  mongo-data:

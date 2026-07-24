@@ -1,0 +1,25 @@
+/* layout.css — chrome wrapping every page */
+
+.skip-link {
+  position: absolute;
+  top: var(--s-3);
+  left: var(--s-3);
+  z-index: calc(var(--z-nav) + 1);
+  padding: var(--s-2) var(--s-4);
+  background: var(--c-turf);
+  color: var(--c-on-turf);
+  font-family: var(--f-display);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  transform: translateY(-200%);
+  transition: transform var(--t-fast) var(--e-out);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+main {
+  display: block;
+  min-height: 60vh;
+}

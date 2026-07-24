@@ -1,0 +1,21 @@
+{
+  "name": "landscaping-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 5173",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./jsconfig.json",
+    "start": "node build/index.js"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-node": "^5.5.7",
+    "@sveltejs/kit": "^2.70.1",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "svelte": "^5.16.0",
+    "svelte-check": "^4.1.1",
+    "vite": "^8.1.5"
+  }
+}

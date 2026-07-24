@@ -1,0 +1,25 @@
+# Build outputs
+**/node_modules
+**/.svelte-kit
+**/build
+**/target
+**/dist
+
+# Local dev
+.env
+.env.*
+!.env.example
+local-images/*
+!local-images/.gitkeep
+
+# VCS and editors
+.git
+.gitignore
+.idea
+.vscode
+*.iml
+.DS_Store
+
+# Docs and CI — not needed in the image
+README.md
+docs/
