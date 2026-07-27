@@ -2,7 +2,7 @@
   import './SiteFooter.css';
   import { env } from '$env/dynamic/public';
   const year = new Date().getFullYear();
-  const logo = `${env.PUBLIC_API_BASE ?? ''}/images/logo-transparent.png`;
+  const logo = `${env.PUBLIC_API_BASE ?? ''}/images/site/logo-transparent.png`;
 </script>
 
 <footer class="footer">

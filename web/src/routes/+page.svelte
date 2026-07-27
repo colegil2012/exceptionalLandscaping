@@ -9,7 +9,7 @@
   let mounted = $state(false);
   onMount(() => { mounted = true; });
 
-  const heroBanner = `${env.PUBLIC_API_BASE ?? ''}/images/hero.png`;
+  const heroBanner = `${env.PUBLIC_API_BASE ?? ''}/images/site/hero.png`;
 
   const cards = [
     {
