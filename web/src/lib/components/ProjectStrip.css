@@ -49,9 +49,13 @@
 }
 
 .pstrip__figure img {
+  display: block;
   width: 100%;
+  height: auto;
   aspect-ratio: 3 / 2;
+  max-height: 240px;
   object-fit: cover;
+  background: var(--c-sand);
   transition: transform var(--t-slow) var(--e-out);
 }
 

@@ -17,7 +17,7 @@
 #   doctl apps update <APP_ID> --spec .do/app.yaml
 # =============================================================================
 
-name: landscaping-site
+name: ells-landscaping
 region: nyc
 
 alerts:
@@ -36,7 +36,7 @@ services:
     instance_size_slug: apps-s-1vcpu-1gb
 
     github:
-      repo: YOUR_GH_USER/landscaping-site
+      repo: colegil2012/exceptionalLandscaping
       branch: main
       deploy_on_push: true
 
@@ -82,18 +82,11 @@ services:
         value: prod
         scope: RUN_TIME
 
-      # Same-origin deployment: the browser never makes a cross-origin call,
-      # so this is only a fallback. Set it to the real origin if you split
-      # the API onto its own hostname.
-      - key: CORS_ORIGINS
-        value: ${APP_URL}
-        scope: RUN_TIME
-
       # --- Mongo -------------------------------------------------------------
       # Managed Mongo (Atlas or DO) — set as an encrypted secret in the
       # control panel, or via `doctl` with type SECRET.
       - key: MONGO_URI
-        value: CHANGE_ME
+        value: ${celtech-dev.DATABASE_URL}
         scope: RUN_TIME
         type: SECRET
 
@@ -104,20 +97,7 @@ services:
       - key: SPACES_REGION
         value: nyc3
         scope: RUN_TIME
-      - key: SPACES_BUCKET
-        value: CHANGE_ME
-        scope: RUN_TIME
-      - key: SPACES_CDN_BASE
-        value: CHANGE_ME
-        scope: RUN_TIME
-      - key: SPACES_KEY
-        value: CHANGE_ME
-        scope: RUN_TIME
-        type: SECRET
-      - key: SPACES_SECRET
-        value: CHANGE_ME
-        scope: RUN_TIME
-        type: SECRET
+
 
       # --- Mail --------------------------------------------------------------
       - key: MAIL_ENABLED
@@ -129,20 +109,6 @@ services:
       - key: MAIL_PORT
         value: "587"
         scope: RUN_TIME
-      - key: MAIL_NOTIFY_TO
-        value: CHANGE_ME
-        scope: RUN_TIME
-      - key: MAIL_NOTIFY_FROM
-        value: CHANGE_ME
-        scope: RUN_TIME
-      - key: MAIL_USERNAME
-        value: CHANGE_ME
-        scope: RUN_TIME
-        type: SECRET
-      - key: MAIL_PASSWORD
-        value: CHANGE_ME
-        scope: RUN_TIME
-        type: SECRET
 
   # ---------------------------------------------------------------------------
   # SvelteKit frontend
@@ -155,7 +121,7 @@ services:
     instance_size_slug: apps-s-1vcpu-0.5gb
 
     github:
-      repo: YOUR_GH_USER/landscaping-site
+      repo: colegil2012/exceptionalLandscaping
       branch: main
       deploy_on_push: true
 
@@ -181,10 +147,7 @@ services:
         window: TEN_MINUTES
 
     envs:
-      # Empty on purpose: api and web share a hostname, so relative /api
-      # requests resolve correctly and no CORS preflight ever fires.
       - key: PUBLIC_API_BASE
-        value: ""
         scope: RUN_TIME
       - key: NODE_ENV
         value: production

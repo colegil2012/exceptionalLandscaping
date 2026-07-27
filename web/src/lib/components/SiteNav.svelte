@@ -21,8 +21,8 @@
 <header class="nav" class:nav--scrolled={scrolled}>
   <div class="nav__inner shell">
     <a href="/" class="nav__mark" onclick={() => (open = false)}>
-      <span class="nav__mark-name">Ridgeline</span>
-      <span class="nav__mark-role">Lawn &amp; Landscape</span>
+      <span class="nav__mark-name">Exceptional</span>
+      <span class="nav__mark-role">Landscaping &amp; Lawn Services</span>
     </a>
 
     <button

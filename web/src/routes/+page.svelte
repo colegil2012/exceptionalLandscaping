@@ -3,10 +3,13 @@
   import ServiceCard from '$components/ServiceCard.svelte';
   import ProjectStrip from '$components/ProjectStrip.svelte';
   import { mowline } from '$scripts/mowline.js';
+  import { env } from '$env/dynamic/public';
   import './page.css';
 
   let mounted = $state(false);
   onMount(() => { mounted = true; });
+
+  const heroBanner = `${env.PUBLIC_API_BASE ?? ''}/images/hero.png`;
 
   const cards = [
     {
@@ -18,9 +21,9 @@
     },
     {
       href: '/bio',
-      eyebrow: 'The crew',
-      title: 'About Ridgeline',
-      blurb: 'Two trucks, four people, and eleven years of learning which slopes hold and which ones do not.',
+      eyebrow: 'Who we are',
+      title: 'About ELLS Enterprises',
+      blurb: 'Louisville Family owned and operated, serving our community since 2022',
       cta: 'Meet the crew'
     },
     {
@@ -43,40 +46,40 @@
 </script>
 
 <svelte:head>
-  <title>Ridgeline Lawn &amp; Landscape — Louisville, KY</title>
+  <title>Exceptional Landscaping & Lawn Services&amp; Landscape — Louisville, KY</title>
   <meta name="description" content="Lawn care, hardscape, planting, and full landscape redesigns across greater Louisville. Licensed and insured. Free estimates." />
 </svelte:head>
 
 <section class="hero" class:hero--in={mounted}>
-  <div class="hero__sky">
-    <div class="hero__inner shell">
-      <span class="eyebrow hero__eyebrow">Louisville, Kentucky · Licensed &amp; insured</span>
-      <h1 class="hero__title">
-        <span class="hero__line">We cut a</span>
-        <span class="hero__line hero__line--accent">clean line.</span>
-      </h1>
-      <p class="hero__lede">
-        Mowing, hardscape, and full redesigns for properties across greater
-        Louisville. Eleven years, two trucks, and no subcontractors.
-      </p>
-      <div class="hero__actions">
-        <a href="/contact" class="btn btn--solid">Request lawn service now</a>
-        <a href="/gallery" class="btn">See our work</a>
-      </div>
-    </div>
+  <div class="hero__banner">
+    <img
+      class="hero__banner-img"
+      src={heroBanner}
+      alt="Exceptional Landscaping & Lawn Services"
+      fetchpriority="high"
+      decoding="async"
+    />
   </div>
 
   <!-- The horizon: the hard line between sky and turf, and the site's thesis. -->
-  <div class="hero__ground" aria-hidden="true">
-    <div class="hero__stripes"></div>
+  <div class="hero__ground">
+    <div class="hero__stripes" aria-hidden="true"></div>
+    <div class="hero__overlay">
+      <div class="hero__inner shell">
+        <span class="eyebrow hero__eyebrow">Louisville, Kentucky · Licensed &amp; insured</span>
+        <div class="hero__actions">
+          <a href="/contact" class="btn btn--solid">Request lawn service now</a>
+          <a href="/gallery" class="btn btn--on-banner">See our work</a>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
 <section class="services">
   <div class="shell">
     <div class="services__head">
-      <span class="eyebrow">What we do</span>
-      <h2 class="services__title">Six services, one crew</h2>
+      <h2 class="services__title">What we do:</h2>
     </div>
     <div class="mowline services__rule" use:mowline></div>
 
@@ -94,7 +97,6 @@
 <section class="recent">
   <div class="shell">
     <div class="recent__head">
-      <span class="eyebrow">A different set each visit</span>
       <h2 class="recent__title">Recent jobs</h2>
     </div>
     <div class="mowline recent__rule" use:mowline></div>
@@ -107,18 +109,5 @@
     {#each cards as card, i}
       <ServiceCard {...card} index={i} />
     {/each}
-  </div>
-</section>
-
-<section class="closing">
-  <div class="closing__inner shell">
-    <div>
-      <h2 class="closing__title">Booking now for the season</h2>
-      <p class="closing__text">
-        Most estimates happen within a week of the request. Weekly mowing
-        routes fill by early spring.
-      </p>
-    </div>
-    <a href="/contact" class="btn btn--on-turf">Request lawn service now</a>
   </div>
 </section>

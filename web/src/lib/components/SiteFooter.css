@@ -29,6 +29,12 @@
   font-size: var(--fs-small);
 }
 
+.footer-logo-img {
+  height: auto;
+  max-width: 180px;
+  margin-bottom: var(--s-3);
+}
+
 .footer__phone {
   display: inline-block;
   margin-top: var(--s-4);

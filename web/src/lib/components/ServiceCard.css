@@ -4,7 +4,7 @@
   position: relative;
   display: block;
   padding: var(--s-6) var(--s-5);
-  background: var(--c-sand);
+  background: var(--c-cut);
   border: 2px solid var(--c-turf);
   overflow: hidden;
   transition: transform var(--t-med) var(--e-out);
@@ -42,6 +42,10 @@
 .scard__blurb,
 .scard__cta {
   transition: color var(--t-med) var(--e-out);
+}
+
+.scard__eyebrow {
+  color: var(--c-sand);
 }
 
 .scard__title {

@@ -1,17 +1,20 @@
 <script>
   import './SiteFooter.css';
+  import { env } from '$env/dynamic/public';
   const year = new Date().getFullYear();
+  const logo = `${env.PUBLIC_API_BASE ?? ''}/images/logo-transparent.png`;
 </script>
 
 <footer class="footer">
   <div class="footer__inner shell">
     <div class="footer__brand">
-      <span class="footer__name">Ridgeline</span>
-      <p class="footer__line">
-        Lawn care, hardscape, and full redesigns across greater Louisville.
-        Licensed and insured.
-      </p>
-      <a href="tel:+15025550142" class="footer__phone">(502) 555-0142</a>
+          <img
+            class="footer-logo-img"
+            src={logo}
+            alt="Exceptional Landscaping & Lawn Services"
+            loading="lazy"
+            decoding="async"
+          />
     </div>
 
     <nav class="footer__col" aria-label="Footer">
@@ -31,7 +34,7 @@
   </div>
 
   <div class="footer__base shell">
-    <span>&copy; {year} Ridgeline Lawn &amp; Landscape</span>
+    <span>&copy; {year} Ells Enterprises</span>
     <a href="/contact" class="footer__cta">Request lawn service</a>
   </div>
 </footer>
