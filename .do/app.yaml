@@ -97,6 +97,9 @@ services:
       - key: SPACES_REGION
         value: nyc3
         scope: RUN_TIME
+      - key: SPACES_CDN_BASE
+        value: https://celtech-solutions-spaces.nyc3.cdn.digitaloceanspaces.com/ells-landscaping
+        scope: RUN_TIME
 
 
       # --- Mail --------------------------------------------------------------
