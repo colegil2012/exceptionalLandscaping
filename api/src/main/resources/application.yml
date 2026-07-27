@@ -2,10 +2,10 @@ spring:
   application:
     name: landscaping-api
   profiles:
-    active: local
+    default: local
   data:
     mongodb:
-      uri: ${MONGO_URI:mongodb://localhost:27017/landscaping}
+      uri: ${MONGO_URI:mongodb://localhost:27017/ells-landscaping}
       auto-index-creation: true
   mail:
     host: ${MAIL_HOST:smtp.office365.com}
