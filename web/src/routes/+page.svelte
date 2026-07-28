@@ -46,7 +46,7 @@
 </script>
 
 <svelte:head>
-  <title>Exceptional Landscaping & Lawn Services&amp; Landscape — Louisville, KY</title>
+  <title>Exceptional Landscaping &amp; Lawn Services — Louisville, KY</title>
   <meta name="description" content="Lawn care, hardscape, planting, and full landscape redesigns across greater Louisville. Licensed and insured. Free estimates." />
 </svelte:head>
 
@@ -68,7 +68,7 @@
       <div class="hero__inner shell">
         <span class="eyebrow hero__eyebrow">Louisville, Kentucky · Licensed &amp; insured</span>
         <div class="hero__actions">
-          <a href="/contact" class="btn btn--solid">Request lawn service now</a>
+          <a href="/contact" class="btn btn--solid">Request Service</a>
           <a href="/gallery" class="btn btn--on-banner">See our work</a>
         </div>
       </div>

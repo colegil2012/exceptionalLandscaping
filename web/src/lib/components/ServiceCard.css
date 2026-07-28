@@ -4,7 +4,7 @@
   position: relative;
   display: block;
   padding: var(--s-6) var(--s-5);
-  background: var(--c-cut);
+  background: var(--c-turf);
   border: 2px solid var(--c-turf);
   overflow: hidden;
   transition: transform var(--t-med) var(--e-out);
@@ -19,7 +19,7 @@
   position: absolute;
   inset: auto 0 0 0;
   height: 100%;
-  background: var(--c-turf);
+  background: var(--c-cut);
   transform: scaleY(0);
   transform-origin: bottom;
   transition: transform var(--t-med) var(--e-linear);
@@ -51,11 +51,12 @@
 .scard__title {
   font-size: var(--fs-h3);
   text-transform: uppercase;
-  color: var(--c-turf);
+  color: var(--c-on-turf);
+  border-bottom: 1px solid var(--c-gold-hilite);
 }
 
 .scard__blurb {
-  color: var(--c-ink-mid);
+  color: var(--c-ink-faint);
   font-size: var(--fs-small);
   margin-bottom: var(--s-3);
 }
@@ -70,14 +71,14 @@
   font-weight: 600;
   letter-spacing: var(--ls-wide);
   text-transform: uppercase;
-  color: var(--c-turf);
+  color: var(--c-cut);
 }
 
 /* Once the sweep covers the card, everything inverts to read on turf. */
 .scard--hovered .scard__eyebrow { color: var(--c-sand-line); }
 .scard--hovered .scard__title   { color: var(--c-on-turf); }
-.scard--hovered .scard__blurb   { color: var(--c-sand); }
-.scard--hovered .scard__cta     { color: var(--c-cut); }
+.scard--hovered .scard__blurb   { color: var(--c-ink-mid); }
+.scard--hovered .scard__cta     { color: var(--c-turf); }
 
 .scard__arrow {
   width: 22px;

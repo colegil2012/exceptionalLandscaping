@@ -213,13 +213,14 @@ select {
 }
 
 .btn--solid {
-  background: var(--c-turf);
-  color: var(--c-on-turf);
+  background: var(--c-sand);
+  border-color: var(--c-sand);
+  color: var(--c-turf);
 }
 
 .btn--solid:hover:not(:disabled) {
   background: var(--c-cut);
-  border-color: var(--c-cut);
+  border-color: var(--c-on-turf);
   color: var(--c-turf-deep);
 }
 
