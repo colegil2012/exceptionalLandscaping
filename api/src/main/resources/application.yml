@@ -8,9 +8,9 @@ spring:
       uri: ${MONGO_URI:mongodb://localhost:27017/ells-landscaping}
       auto-index-creation: true
   mail:
-    host: ${MAIL_HOST:smtp.office365.com}
+    host: ${MAIL_HOST:smtp.fastmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:cole@celtechgs.com}
+    username: ${MAIL_USERNAME:druid@celtechsolutions.tech}
     password: ${MAIL_PASSWORD:}
     properties:
       mail.smtp.auth: true
@@ -27,8 +27,8 @@ app:
     allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
   mail:
     enabled: ${MAIL_ENABLED:false}
-    notify-to: ${MAIL_NOTIFY_TO:studio@example.com}
-    notify-from: ${MAIL_NOTIFY_FROM:no-reply@example.com}
+    notify-to: ${MAIL_NOTIFY_TO:josh@ells4u.com}
+    notify-from: ${MAIL_NOTIFY_FROM:mailer@celtechsolutions.tech}
   storage:
     local:
       root: ${LOCAL_IMAGE_ROOT:../local-images}
