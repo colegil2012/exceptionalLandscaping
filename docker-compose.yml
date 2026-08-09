@@ -31,38 +31,12 @@ services:
       retries: 5
       start_period: 20s
 
-  api:
-    build:
-      context: .
-      dockerfile: api/Dockerfile
-    container_name: landscaping-api
-    restart: unless-stopped
-    depends_on:
-      mongo:
-        condition: service_healthy
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_PROFILES_ACTIVE: local
-      # `mongo` is the compose service name, resolved on the shared network.
-      MONGO_URI: mongodb://mongo:27017/landscaping
-      CORS_ORIGINS: http://localhost:3000
-      LOCAL_IMAGE_ROOT: /app/local-images
-      LOCAL_IMAGE_PREFIX: /images
-      MAIL_ENABLED: "false"
-    volumes:
-      # Bind-mounted so images dropped on the host appear immediately in the
-      # container without a rebuild.
-      - ./local-images:/app/local-images
-
   web:
     build:
       context: .
       dockerfile: web/Dockerfile
     container_name: landscaping-web
     restart: unless-stopped
-    depends_on:
-      - api
     ports:
       - "3000:3000"
     environment:

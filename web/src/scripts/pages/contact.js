@@ -127,16 +127,31 @@ export async function submitForm(form) {
   }
 
   try {
+    // The centralized inquiry model has columns for name/email/phone/company/
+    // subject/message/website only. Fold the landscaping-specific fields into
+    // subject + message so nothing is lost.
+    const subject = [
+      SERVICE_TYPES.find((s) => s.value === form.serviceType)?.label,
+      PROPERTY_SIZES.find((s) => s.value === form.propertySize)?.label
+    ].filter(Boolean).join(' · ');
+
+    const message = [
+      `Property: ${form.propertyAddress.trim()}`,
+      `Service: ${SERVICE_TYPES.find((s) => s.value === form.serviceType)?.label ?? form.serviceType}`,
+      `Size: ${PROPERTY_SIZES.find((s) => s.value === form.propertySize)?.label ?? form.propertySize}`,
+      `Frequency: ${FREQUENCIES.find((f) => f.value === form.frequency)?.label ?? form.frequency}`,
+      `When: ${URGENCIES.find((u) => u.value === form.urgency)?.label ?? form.urgency}`,
+      '',
+      form.message.trim()
+    ].join('\n');
+
     const response = await api.submitInquiry({
       name: form.name.trim(),
       email: form.email.trim(),
       phone: form.phone.trim(),
-      propertyAddress: form.propertyAddress.trim(),
-      message: form.message.trim(),
-      serviceType: form.serviceType,
-      frequency: form.frequency,
-      urgency: form.urgency,
-      propertySize: form.propertySize,
+      company: '',
+      subject,
+      message,
       website: form.website
     });
 
@@ -146,16 +161,8 @@ export async function submitForm(form) {
     };
   } catch (error) {
     if (error instanceof ApiError) {
-      return {
-        ok: false,
-        message: error.message,
-        fields: error.body?.fields ?? {}
-      };
+      return { ok: false, message: error.message, fields: error.body?.fields ?? {} };
     }
-    return {
-      ok: false,
-      message: 'Something went wrong. Try again in a moment.',
-      fields: {}
-    };
+    return { ok: false, message: 'Something went wrong. Try again in a moment.', fields: {} };
   }
 }
