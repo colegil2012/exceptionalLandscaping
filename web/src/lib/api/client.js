@@ -1,7 +1,7 @@
 /**
  * Ells frontend API client — now consumes the centralized Celtech API.
  *
- * All data comes from https://celtech-solutions.tech/api. Gallery reads are
+ * All data comes from https://celtechsolutions.tech/api. Gallery reads are
  * public + cached; the contact form POSTs leads to the centralized inquiry
  * endpoint. This site no longer has its own Spring API or database.
  *
