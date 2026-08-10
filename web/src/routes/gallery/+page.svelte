@@ -14,13 +14,26 @@
   let selected = $state(null);
   let sliderPos = $state(50);
 
+  // A synthetic album collecting every image, used by "View all work".
+  const allWorkAlbum = $derived({ id: '__all', label: 'All work', images: projects, coverImageId: null });
+
   // Images to render in the grid: the open album's images, or everything.
   const inAlbum = $derived(openAlbum ? openAlbum.images : projects);
 
+  // Category chips reflect whatever's in scope: the open album, or the whole
+  // gallery when we're on the album index.
   const services = $derived([
     'all',
-    ...new Set(inAlbum.flatMap((p) => p.serviceTypes).filter(Boolean))
+    ...new Set((openAlbum ? inAlbum : projects).flatMap((p) => p.serviceTypes).filter(Boolean))
   ]);
+
+  // Album index, filtered by the active category: keep albums where any image
+  // carries that category tag.
+  const indexAlbums = $derived(
+    activeService === 'all'
+      ? albums
+      : albums.filter((a) => a.images.some((p) => p.serviceTypes.includes(activeService)))
+  );
 
   const visible = $derived(
     activeService === 'all'
@@ -35,20 +48,48 @@
       categories = data.categories ?? [];
       projects = data.projects ?? [];
       status = projects.length ? 'ready' : 'empty';
+      applyHash(); // deep-link once data is in
     } catch {
       status = 'error';
     }
   });
 
+  /** Resolve #imageId (or #album-slug) into the right album + open state. */
+  function applyHash() {
+    const raw = location.hash.slice(1);
+    if (!raw) return;
+
+    // An album deep-link, e.g. #album-backyard-reset
+    if (raw.startsWith('album-')) {
+      const slug = raw.slice('album-'.length);
+      const album = albums.find((a) => a.slug === slug);
+      if (album) openAlbum = album;
+      return;
+    }
+
+    // Otherwise treat it as an image id: open its album and pop the lightbox.
+    const project = projects.find((p) => p.id === raw);
+    if (!project) return;
+    const home = albums.find((a) => a.images.some((p) => p.id === project.id)) ?? allWorkAlbum;
+    openAlbum = home;
+    open(project);
+  }
+
   function enterAlbum(album) {
     openAlbum = album;
-    activeService = 'all';
+    // Reflect in the URL so the view is shareable and back-button friendly.
+    if (album && album.slug) {
+      history.replaceState(null, '', `#album-${album.slug}`);
+    } else {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function backToIndex() {
     openAlbum = null;
     activeService = 'all';
+    history.replaceState(null, '', location.pathname + location.search);
   }
 
   function open(project) {
@@ -73,7 +114,7 @@
   <meta name="description" content="Completed landscaping, hardscape, and lawn care projects across greater Louisville." />
 </svelte:head>
 
-<svelte:window on:keydown={onKeydown} />
+<svelte:window on:keydown={onKeydown} on:hashchange={applyHash} />
 
 <header class="work-head shell">
   <span class="eyebrow">Finished jobs</span>
@@ -87,7 +128,7 @@
     </p>
   {/if}
 
-  {#if status === 'ready' && (openAlbum || albums.length === 0)}
+  {#if status === 'ready'}
     <div class="filters" role="group" aria-label="Filter by service">
       {#each services as service}
         <button
@@ -118,34 +159,38 @@
 
   {:else if !openAlbum && albums.length}
     <!-- Album index: one card per job, plus a "view everything" tile. -->
-    <div class="albums__grid">
-      {#each albums as album (album.id)}
-        <button class="albumcard" onclick={() => enterAlbum(album)} in:fade={{ duration: 260 }}>
-          <span class="albumcard__media">
-            {#if album.images[0]}
-              <img
-                src={(album.images.find((p) => p.id === album.coverImageId) ?? album.images[0]).thumbUrl
-                     ?? (album.images.find((p) => p.id === album.coverImageId) ?? album.images[0]).imageUrl}
-                alt={album.label}
-                loading="lazy"
-                decoding="async"
-              />
-            {/if}
-            <span class="albumcard__count">{album.images.length} photo{album.images.length === 1 ? '' : 's'}</span>
-          </span>
+    {#if indexAlbums.length === 0}
+      <p class="work__notice">No albums match that service.</p>
+    {:else}
+      <div class="albums__grid">
+        {#each indexAlbums as album (album.id)}
+          <button class="albumcard" onclick={() => enterAlbum(album)} in:fade={{ duration: 260 }}>
+            <span class="albumcard__media">
+              {#if album.images[0]}
+                <img
+                  src={(album.images.find((p) => p.id === album.coverImageId) ?? album.images[0]).thumbUrl
+                       ?? (album.images.find((p) => p.id === album.coverImageId) ?? album.images[0]).imageUrl}
+                  alt={album.label}
+                  loading="lazy"
+                  decoding="async"
+                />
+              {/if}
+              <span class="albumcard__count">{album.images.length} photo{album.images.length === 1 ? '' : 's'}</span>
+            </span>
+            <span class="albumcard__body">
+              <span class="albumcard__title">{album.label}</span>
+            </span>
+          </button>
+        {/each}
+
+        <button class="albumcard albumcard--all" onclick={() => enterAlbum(allWorkAlbum)}>
           <span class="albumcard__body">
-            <span class="albumcard__title">{album.label}</span>
+            <span class="albumcard__title">View all work</span>
+            <span class="albumcard__meta">{projects.length} photos</span>
           </span>
         </button>
-      {/each}
-
-      <button class="albumcard albumcard--all" onclick={() => enterAlbum({ label: 'All work', images: projects, coverImageId: null })}>
-        <span class="albumcard__body">
-          <span class="albumcard__title">View all work</span>
-          <span class="albumcard__meta">{projects.length} photos</span>
-        </span>
-      </button>
-    </div>
+      </div>
+    {/if}
 
   {:else}
     <!-- Album detail (or flat grid when there are no albums). -->
@@ -181,73 +226,3 @@
     </div>
   {/if}
 </div>
-
-{#if selected}
-  <div
-    class="lightbox"
-    role="dialog"
-    aria-modal="true"
-    aria-label={selected.title}
-    transition:fade={{ duration: 200 }}
-  >
-    <button class="lightbox__scrim" onclick={() => (selected = null)} aria-label="Close"></button>
-
-    <div class="lightbox__panel" transition:scale={{ duration: 280, start: 0.97 }}>
-      <div class="lightbox__media">
-        {#if selected.beforeUrl}
-          <div class="compare" style="--pos: {sliderPos}%">
-            <img class="compare__after" src={selected.imageUrl} alt="{selected.title}, finished" />
-            <div class="compare__before-wrap">
-              <img class="compare__before" src={selected.beforeUrl} alt="{selected.title}, before" />
-            </div>
-            <div class="compare__handle" aria-hidden="true">
-              <span class="compare__grip"></span>
-            </div>
-            <input
-              class="compare__range"
-              type="range"
-              min="0"
-              max="100"
-              bind:value={sliderPos}
-              aria-label="Compare before and after"
-            />
-            <span class="compare__tag compare__tag--before">Before</span>
-            <span class="compare__tag compare__tag--after">After</span>
-          </div>
-        {:else}
-          <img class="lightbox__single" src={selected.imageUrl ?? selected.thumbUrl} alt={selected.title} />
-        {/if}
-      </div>
-
-      <div class="lightbox__info">
-        <span class="eyebrow">{label(selected.serviceType ?? '')}</span>
-        <h2 class="lightbox__title">{selected.title}</h2>
-        <dl class="lightbox__facts">
-          {#if selected.location}
-            <div class="lightbox__fact">
-              <dt>Location</dt>
-              <dd>{selected.location}</dd>
-            </div>
-          {/if}
-          {#if selected.duration}
-            <div class="lightbox__fact">
-              <dt>Duration</dt>
-              <dd>{selected.duration}</dd>
-            </div>
-          {/if}
-        </dl>
-        {#if selected.description}
-          <p class="lightbox__desc">{selected.description}</p>
-        {/if}
-        <a href="/contact" class="btn btn--solid lightbox__cta">Request something like this</a>
-      </div>
-
-      <button class="lightbox__close" onclick={() => (selected = null)}>
-        <span class="visually-hidden">Close</span>
-        <svg viewBox="0 0 20 20" aria-hidden="true">
-          <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" stroke-width="2" fill="none" />
-        </svg>
-      </button>
-    </div>
-  </div>
-{/if}
