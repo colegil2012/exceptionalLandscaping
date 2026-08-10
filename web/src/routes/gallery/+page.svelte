@@ -4,31 +4,52 @@
   import { api } from '$lib/api/client.js';
   import './page.css';
 
+  let albums = $state([]);
+  let categories = $state([]);
   let projects = $state([]);
   let status = $state('loading');
+
+  let openAlbum = $state(null);   // album object, or null for the index view
   let activeService = $state('all');
   let selected = $state(null);
   let sliderPos = $state(50);
 
+  // Images to render in the grid: the open album's images, or everything.
+  const inAlbum = $derived(openAlbum ? openAlbum.images : projects);
+
   const services = $derived([
     'all',
-    ...new Set(projects.map((p) => p.serviceType).filter(Boolean))
+    ...new Set(inAlbum.flatMap((p) => p.serviceTypes).filter(Boolean))
   ]);
 
   const visible = $derived(
     activeService === 'all'
-      ? projects
-      : projects.filter((p) => p.serviceType === activeService)
+      ? inAlbum
+      : inAlbum.filter((p) => p.serviceTypes.includes(activeService))
   );
 
   onMount(async () => {
     try {
-      projects = (await api.gallery()) ?? [];
+      const data = await api.galleryGrouped();
+      albums = data.albums ?? [];
+      categories = data.categories ?? [];
+      projects = data.projects ?? [];
       status = projects.length ? 'ready' : 'empty';
     } catch {
       status = 'error';
     }
   });
+
+  function enterAlbum(album) {
+    openAlbum = album;
+    activeService = 'all';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function backToIndex() {
+    openAlbum = null;
+    activeService = 'all';
+  }
 
   function open(project) {
     selected = project;
@@ -42,13 +63,13 @@
   /** Turns a service key like "full-redesign" into "Full redesign". */
   function label(key) {
     if (key === 'all') return 'All work';
-    const spaced = key.replace(/-/g, ' ');
+    const spaced = (key ?? '').replace(/-/g, ' ');
     return spaced.charAt(0).toUpperCase() + spaced.slice(1);
   }
 </script>
 
 <svelte:head>
-  <title>Our Work — Ridgeline Lawn &amp; Landscape</title>
+  <title>Our Work — Exceptional Landscaping &amp; Lawn Services</title>
   <meta name="description" content="Completed landscaping, hardscape, and lawn care projects across greater Louisville." />
 </svelte:head>
 
@@ -56,13 +77,17 @@
 
 <header class="work-head shell">
   <span class="eyebrow">Finished jobs</span>
-  <h1 class="work-head__title">Our Work</h1>
-  <p class="work-head__lede">
-    Every project here is one we built ourselves. Where we have the before
-    shot, you can drag to compare.
-  </p>
+  {#if openAlbum}
+    <button class="work-head__back" onclick={backToIndex}>← All albums</button>
+    <h1 class="work-head__title">{openAlbum.label}</h1>
+  {:else}
+    <h1 class="work-head__title">Our Work</h1>
+    <p class="work-head__lede">
+      Browse by job below, or open an album to see every shot from that project.
+    </p>
+  {/if}
 
-  {#if status === 'ready'}
+  {#if status === 'ready' && (openAlbum || albums.length === 0)}
     <div class="filters" role="group" aria-label="Filter by service">
       {#each services as service}
         <button
@@ -84,7 +109,46 @@
         <div class="work__skeleton"></div>
       {/each}
     </div>
-  {:else if status === 'ready'}
+
+  {:else if status === 'empty'}
+    <p class="work__notice">No projects published yet. Check back soon.</p>
+
+  {:else if status === 'error'}
+    <p class="work__notice">Our work could not load. Refresh to try again.</p>
+
+  {:else if !openAlbum && albums.length}
+    <!-- Album index: one card per job, plus a "view everything" tile. -->
+    <div class="albums__grid">
+      {#each albums as album (album.id)}
+        <button class="albumcard" onclick={() => enterAlbum(album)} in:fade={{ duration: 260 }}>
+          <span class="albumcard__media">
+            {#if album.images[0]}
+              <img
+                src={(album.images.find((p) => p.id === album.coverImageId) ?? album.images[0]).thumbUrl
+                     ?? (album.images.find((p) => p.id === album.coverImageId) ?? album.images[0]).imageUrl}
+                alt={album.label}
+                loading="lazy"
+                decoding="async"
+              />
+            {/if}
+            <span class="albumcard__count">{album.images.length} photo{album.images.length === 1 ? '' : 's'}</span>
+          </span>
+          <span class="albumcard__body">
+            <span class="albumcard__title">{album.label}</span>
+          </span>
+        </button>
+      {/each}
+
+      <button class="albumcard albumcard--all" onclick={() => enterAlbum({ label: 'All work', images: projects, coverImageId: null })}>
+        <span class="albumcard__body">
+          <span class="albumcard__title">View all work</span>
+          <span class="albumcard__meta">{projects.length} photos</span>
+        </span>
+      </button>
+    </div>
+
+  {:else}
+    <!-- Album detail (or flat grid when there are no albums). -->
     <div class="work__grid">
       {#each visible as project (project.id)}
         <button
@@ -109,16 +173,12 @@
           <span class="jobcard__body">
             <span class="jobcard__title">{project.title}</span>
             <span class="jobcard__meta">
-              {project.location}{project.duration ? ` · ${project.duration}` : ''}
+              {project.serviceLabel ?? ''}{project.location ? ` · ${project.location}` : ''}
             </span>
           </span>
         </button>
       {/each}
     </div>
-  {:else if status === 'empty'}
-    <p class="work__notice">No projects published yet. Check back soon.</p>
-  {:else}
-    <p class="work__notice">Our work could not load. Refresh to try again.</p>
   {/if}
 </div>
 
@@ -135,8 +195,6 @@
     <div class="lightbox__panel" transition:scale={{ duration: 280, start: 0.97 }}>
       <div class="lightbox__media">
         {#if selected.beforeUrl}
-          <!-- Before/after comparison. The range input is the real control;
-               it sits on top invisibly so keyboard and touch both work. -->
           <div class="compare" style="--pos: {sliderPos}%">
             <img class="compare__after" src={selected.imageUrl} alt="{selected.title}, finished" />
             <div class="compare__before-wrap">
