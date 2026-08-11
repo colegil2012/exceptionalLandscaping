@@ -1,13 +1,19 @@
 <script>
   import { onMount } from 'svelte';
   import { fade, scale } from 'svelte/transition';
-  import { api } from '$lib/api/client.js';
   import './page.css';
 
-  let albums = $state([]);
-  let categories = $state([]);
-  let projects = $state([]);
-  let status = $state('loading');
+  let { data } = $props();
+
+  // Server-loaded collections.
+  const albums = $derived(data.albums ?? []);
+  const categories = $derived(data.categories ?? []);
+  const projects = $derived(data.projects ?? []);
+
+  // Status is derived from what the load gave us.
+  const status = $derived(
+    data.loadError ? 'error' : projects.length ? 'ready' : 'empty'
+  );
 
   let openAlbum = $state(null);   // album object, or null for the index view
   let activeService = $state('all');
@@ -41,17 +47,9 @@
       : inAlbum.filter((p) => p.serviceTypes.includes(activeService))
   );
 
-  onMount(async () => {
-    try {
-      const data = await api.galleryGrouped();
-      albums = data.albums ?? [];
-      categories = data.categories ?? [];
-      projects = data.projects ?? [];
-      status = projects.length ? 'ready' : 'empty';
-      applyHash(); // deep-link once data is in
-    } catch {
-      status = 'error';
-    }
+  // Data is present at first paint now; just resolve any deep-link on mount.
+  onMount(() => {
+    applyHash();
   });
 
   /** Resolve #imageId (or #album-slug) into the right album + open state. */
@@ -110,16 +108,18 @@
 </script>
 
 <svelte:head>
-  <title>Our Work — Exceptional Landscaping &amp; Lawn Services</title>
+  <title>Our Work | Exceptional Landscaping &amp; Lawn Services</title>
   <meta name="description" content="Completed landscaping, hardscape, and lawn care projects across greater Louisville." />
 </svelte:head>
 
 <svelte:window on:keydown={onKeydown} on:hashchange={applyHash} />
 
 <header class="work-head shell">
-  <span class="eyebrow">Finished jobs</span>
   {#if openAlbum}
     <button class="work-head__back" onclick={backToIndex}>← All albums</button>
+  {/if}
+  <span class="eyebrow">Finished jobs</span>
+  {#if openAlbum}
     <h1 class="work-head__title">{openAlbum.label}</h1>
   {:else}
     <h1 class="work-head__title">Our Work</h1>
@@ -194,7 +194,7 @@
 
   {:else}
     <!-- Album detail (or flat grid when there are no albums). -->
-    <div class="work__grid">
+    <div class="work__grid" class:work--album={openAlbum}>
       {#each visible as project (project.id)}
         <button
           class="jobcard"

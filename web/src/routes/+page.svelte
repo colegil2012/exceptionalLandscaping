@@ -1,10 +1,12 @@
 <script>
   import { onMount } from 'svelte';
   import ServiceCard from '$components/ServiceCard.svelte';
-  import ProjectStrip from '$components/ProjectStrip.svelte';
+  import AlbumStrip from '$components/AlbumStrip.svelte';
   import { mowline } from '$scripts/mowline.js';
   import { env } from '$env/dynamic/public';
   import './page.css';
+
+  let { data } = $props();
 
   let mounted = $state(false);
   onMount(() => { mounted = true; });
@@ -101,7 +103,7 @@
     </div>
     <div class="mowline recent__rule" use:mowline></div>
   </div>
-  <ProjectStrip limit={8} />
+  <AlbumStrip albums={data.albums} limit={8} />
 </section>
 
 <section class="highlights shell">

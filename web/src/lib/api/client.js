@@ -26,11 +26,13 @@ export class ApiError extends Error {
 }
 
 async function request(path, options = {}) {
+  const { fetch: customFetch, ...init } = options;
+  const doFetch = customFetch ?? fetch;
   let response;
   try {
-    response = await fetch(`${BASE}${path}`, {
-      headers: { 'Content-Type': 'application/json', ...options.headers },
-      ...options
+    response = await doFetch(`${BASE}${path}`, {
+      headers: { 'Content-Type': 'application/json', ...init.headers },
+      ...init
     });
   } catch {
     throw new ApiError('Could not reach the server. Check your connection and try again.', 0, null);
@@ -103,7 +105,12 @@ function normalize(data) {
  */
 let galleryCache = null;
 
-function fetchRawGallery({ refresh = false } = {}) {
+function fetchRawGallery({ refresh = false, fetch: customFetch } = {}) {
+  // In a SvelteKit load we get a request-scoped fetch; use it directly and
+  // skip the shared module cache (which would leak across server requests).
+  if (customFetch) {
+    return request(`/api/sites/${encodeURIComponent(SITE_SLUG)}/gallery`, { fetch: customFetch });
+  }
   if (refresh) galleryCache = null;
   if (!galleryCache) {
     galleryCache = request(
@@ -120,6 +127,30 @@ function fetchRawGallery({ refresh = false } = {}) {
 /** Force the next gallery read to hit the network (e.g. after an admin edit). */
 export function refreshGallery() {
   galleryCache = null;
+}
+
+/**
+ * The about-page / site meta payload, cached like the gallery read. Small and
+ * stable, so we share one request per page load. Pass { refresh: true } to bust it.
+ */
+let metaCache = null;
+
+function fetchRawMeta({ refresh = false } = {}) {
+  if (refresh) metaCache = null;
+  if (!metaCache) {
+    metaCache = request(
+        `/api/sites/${encodeURIComponent(SITE_SLUG)}/meta`
+    ).catch((err) => {
+      metaCache = null;
+      throw err;
+    });
+  }
+  return metaCache;
+}
+
+/** Force the next meta read to hit the network. */
+export function refreshMeta() {
+  metaCache = null;
 }
 
 export const api = {
@@ -157,8 +188,8 @@ export const api = {
    * Each album carries its cover image (resolved from coverImageId, falling
    * back to the album's first image) and a count.
    */
-  async albums() {
-    const data = await fetchRawGallery();
+  async albums(opts = {}) {
+    const data = await fetchRawGallery(opts);
     const { albums, projects } = normalize(data);
 
     return albums.map((album) => {
@@ -182,8 +213,8 @@ export const api = {
    * { albums, categories, projects }. Lets a page group by album or filter by
    * category without re-deriving anything from the two raw arrays.
    */
-  async galleryGrouped() {
-    const data = await fetchRawGallery();
+  async galleryGrouped(opts = {}) {
+    const data = await fetchRawGallery(opts);
     const { albums, categories, projects } = normalize(data);
 
     const withMembers = albums.map((album) => ({
@@ -205,6 +236,35 @@ export const api = {
   async project(id) {
     const all = await this.gallery();
     return all.find((p) => p.id === id) ?? null;
+  },
+
+  /**
+   * Site meta (about-page copy + about image), managed in the Celtech portal.
+   * The DTO nests copy into Section objects ({ header, section }); we normalize
+   * each to a plain object and always return arrays/objects so the component can
+   * render without guarding every access. Unset text stays undefined.
+   */
+  async meta(opts = {}) {
+    const data = await fetchRawMeta(opts);
+    if (!data) return { serviceHeader: [] };
+
+    /** A Section → { header, section } with empty strings coerced to undefined. */
+    const section = (s) => ({
+      header: s?.header || undefined,
+      section: s?.section || undefined
+    });
+
+    return {
+      aboutHeader: data.aboutHeader || undefined,
+      topSection: section(data.topSection),
+      midSection: section(data.midSection),
+      bottomSection: section(data.bottomSection),
+      // The facts band / small header-blurb pairs.
+      serviceHeader: (data.serviceHeader ?? []).map(section),
+      aboutImageUrl: data.aboutImageUrl || undefined,
+      aboutImageCaption: data.aboutImageCaption || undefined,
+      aboutImageAltText: data.aboutImageAltText || undefined
+    };
   },
 
   /** Contact form → centralized inquiry endpoint for this site. */

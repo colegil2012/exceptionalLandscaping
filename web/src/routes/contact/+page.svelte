@@ -49,7 +49,7 @@
 </script>
 
 <svelte:head>
-  <title>Get a Quote — Exceptional Landscaping &amp; Lawn Services</title>
+  <title>Get a Quote | Exceptional Landscaping &amp; Lawn Services</title>
   <meta name="description" content="Request lawn service or a landscaping estimate. We walk the property and send a written, fixed-price scope." />
 </svelte:head>
 
@@ -293,7 +293,7 @@
 
       <div class="aside__urgent">
         <span class="aside__urgent-label">Need someone today</span>
-        <a href="tel:+15025550142" class="aside__phone">(502) 555-0142</a>
+        <a href="tel:+15022025739" class="aside__phone">(502) 202-5739</a>
         <p class="aside__hours">Monday to Friday, 7am to 5pm</p>
       </div>
     </aside>
