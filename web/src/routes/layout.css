@@ -22,4 +22,14 @@
 main {
   display: block;
   min-height: 60vh;
+  /* Clear the fixed nav so page content never tucks under it.
+     Nav is ~4.6rem tall (var(--s-4) padding block + the two-line mark). */
+  padding-top: calc(var(--s-8) + var(--s-3));
+}
+
+@media (max-width: 760px) {
+  main {
+    /* Toggle button (42px) + var(--s-4) padding block ≈ 4.6rem; add a little air. */
+    padding-top: calc(var(--s-8) + var(--s-2));
+  }
 }

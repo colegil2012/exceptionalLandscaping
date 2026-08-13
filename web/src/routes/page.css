@@ -126,6 +126,61 @@
   transform: scaleX(1);
 }
 
+@media (max-width: 760px) {
+  .hero {
+    min-height: 0;
+  }
+
+  .hero__banner {
+    margin-block: var(--s-5);
+    max-height: 60svh;
+  }
+
+  .hero__banner-img {
+    max-height: 60svh;
+  }
+
+  /* Let the turf band grow to fit the CTA instead of clipping it. */
+  .hero__ground {
+    min-height: 0;
+    overflow: visible;
+    padding-block: var(--s-6);
+  }
+
+  /* The overlay stops being an absolute centered layer and becomes normal
+     flow inside the ground band, so the buttons can't be clipped. */
+  .hero__overlay {
+    position: static;
+    pointer-events: auto;
+  }
+
+  .hero__inner {
+    padding-inline: var(--gutter);
+  }
+
+  /* Separate the eyebrow from the stacked buttons, and center it to match. */
+  .hero__eyebrow {
+    margin-bottom: var(--s-4);
+    text-align: center;
+  }
+
+  /* Stack the CTAs full-width so they never overflow the band horizontally. */
+  .hero__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--s-3);
+  }
+
+  .hero__actions .btn {
+    width: 100%;
+  }
+
+  /* Trim the outer section rhythm so the mowline sits close to "What we do". */
+  .services {
+    padding-block: var(--s-6);
+  }
+}
+
 /* --- Services ------------------------------------------------------------ */
 
 .services {
