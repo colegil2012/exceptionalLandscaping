@@ -54,47 +54,6 @@
 </svelte:head>
 
   <div class="quote">
-    <section class="cards shell" aria-label="Our card">
-      <article class="cards__row cards__row--front">
-        <figure class="cards__figure">
-          <img
-            class="cards__img"
-            src="/site/contact-card-front.png"
-            alt="Exceptional Landscaping business card, front"
-            loading="lazy"
-            decoding="async"
-          />
-        </figure>
-        <div class="cards__blurb">
-          <span class="eyebrow">Leave one on the fridge</span>
-          <h2 class="cards__blurb-title">Keep us handy</h2>
-          <p class="cards__blurb-text">
-            Grab a card next time we are on site, or save the number below.
-            One text and we will get you on the schedule.
-          </p>
-        </div>
-      </article>
-
-      <article class="cards__row cards__row--back">
-        <div class="cards__blurb">
-          <span class="eyebrow">What is on the back</span>
-          <h2 class="cards__blurb-title">Everything we do</h2>
-          <p class="cards__blurb-text">
-            Mowing through full redesigns — the back lists the services and the
-            areas we cover across greater Louisville.
-          </p>
-        </div>
-        <figure class="cards__figure">
-          <img
-            class="cards__img"
-            src="/site/contact-card-back.png"
-            alt="Exceptional Landscaping business card, back"
-            loading="lazy"
-            decoding="async"
-          />
-        </figure>
-      </article>
-    </section>
 
     <header class="quote__head shell">
       <span class="eyebrow">Free estimate</span>

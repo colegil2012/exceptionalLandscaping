@@ -427,7 +427,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-block: calc(var(--s-10) + var(--s-2)) var(--s-5);
+  padding-block: calc(var(--s-6) + var(--s-2)) var(--s-4);
 }
 
 .work-head__back {

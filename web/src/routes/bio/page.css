@@ -1,7 +1,7 @@
 /* page.css — about page only */
 
 .about__head {
-  padding-block: calc(var(--s-10) + var(--s-2)) var(--s-6);
+  padding-block: calc(var(--s-6) + var(--s-2)) var(--s-4);
 }
 
 .about__title {
