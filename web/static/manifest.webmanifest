@@ -1,0 +1,14 @@
+{
+  "name": "ELLS Enterprises — Exceptional Landscaping & Lawn Services",
+  "short_name": "ELLS",
+  "description": "Lawn care, hardscape, planting, and full landscape redesigns across greater Louisville.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2f5d3a",
+  "icons": [
+    { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" },
+    { "src": "/icon-512-maskable.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+  ]
+}
