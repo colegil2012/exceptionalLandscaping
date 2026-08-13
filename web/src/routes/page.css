@@ -8,7 +8,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 94svh;
+  min-height: 55svh;
 }
 
 .hero {
